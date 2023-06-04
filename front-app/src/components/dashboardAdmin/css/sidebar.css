@@ -1,0 +1,37 @@
+.sidebar {
+  background-color: #444;
+  padding: 20px;
+  color: #ffffff;
+}
+
+.app-container {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  width: 330px; 
+  background-color: #444; 
+}
+
+.col-lg-10 {
+  margin-left: 250px; 
+}
+
+.sidebar-item {
+  margin-bottom: 10px;
+}
+
+.nav-link {
+  display: block;
+  padding: 10px;
+  color: #eee;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background-color: #555;
+}
+
+.active {
+  background-color: #888;
+}
