@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Allgoods_Controller;
+use App\Http\Controllers\api\AuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +18,9 @@ use App\Http\Controllers\Allgoods_Controller;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/auth/register', [AuthController::class, 'createUser']);
+Route::post('/auth/login', [AuthController::class, 'loginUser']);
 
 //images
 
@@ -40,6 +44,8 @@ Route::delete('/partners/{partner_id}', [Allgoods_Controller::class, 'DestroyP']
 //Product
 
 Route::get('/products', [Allgoods_Controller::class, 'sendDataPr']);
+Route::put('/products/{product_id}/suspend', [Allgoods_Controller::class, 'suspendProduct']);
+Route::put('/products/{product_id}/unsuspend', [Allgoods_Controller::class, 'unsuspendProduct']);
 Route::delete('/products/{product_id}', [Allgoods_Controller::class, 'DestroyPr']);
 
 //Command
@@ -50,5 +56,5 @@ Route::delete('/commands/{command_id}', [Allgoods_Controller::class, 'DestroyCm'
 
 
 
-///image
+
 

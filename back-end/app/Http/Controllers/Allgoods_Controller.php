@@ -11,6 +11,7 @@ use App\Models\Command;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class Allgoods_Controller extends Controller
 {
@@ -69,7 +70,6 @@ public function unsuspendCustomer($customer_id)
     public function DestroyC($customer_id)
     {
         $customer = Customer::find($customer_id); 
-        dd($customer);
 
         if (!$customer) {
             return response()->json(['error' => 'Customer not found'], 404);
@@ -119,7 +119,6 @@ public function unsuspendCustomer($customer_id)
     public function DestroyP($partner)
     {
         $partner = Partner::find($partner); 
-        dd($partner);
 
         if (!$partner) {
             return response()->json(['error' => 'partner not found'], 404);
@@ -134,41 +133,48 @@ public function unsuspendCustomer($customer_id)
      // Product Section
     
      public function sendDataPr(Request $request)
-     {
-         $products = PartnersProduct::all();
- 
-         return response()->json($products);
-     }
- 
-     public function showPr($product)
-     {
-         $data = PartnersProduct::find($product); 
- 
-         if (!$data) {
-             return response()->json(['error' => 'product not found'], 404);
-         }
- 
-         return response()->json($data);
-     }
- 
-     public function EditPr(Request $request, $product)
-     {
-         $product = PartnersProduct::find($product);
- 
-         if (!$product) {
-             return response()->json(['error' => 'product not found'], 404);
-         }
- 
-         $product->name = $request->input('name');
-         $product->save();
- 
-         return response()->json($product);
-     }
+{
+    $products = DB::table('partners_products')
+        ->join('partners', 'partners_products.partner_id', '=', 'partners.partner_id')
+        ->join('categories', 'partners_products.category_id', '=', 'categories.category_id')
+        ->select('partners_products.*', 'partners.username as partner_name', 'categories.name as category_name')
+        ->get();
+
+    return response()->json($products);
+}
+
+public function suspendProduct($product_id)
+{
+    $product = PartnersProduct::find($product_id);
+    if (!$product) {
+        return response()->json(['error' => 'product not found'], 404);
+    }
+
+    $product->suspended = true;
+    $product->save();
+
+    return response()->json(['message' => 'Product suspended successfully'], 200);
+}
+
+public function unsuspendProduct($product_id)
+{
+    $product = PartnersProduct::find($product_id);
+    if (!$product) {
+        return response()->json(['error' => 'Product not found'], 404);
+    }
+
+    $product->suspended = false;
+    $product->save();
+
+    return response()->json(['message' => 'Product unsuspended successfully'], 200);
+}
+
+
+
  
      public function DestroyPr($product)
      {
          $product = PartnersProduct::find($product); 
-         dd($product);
  
          if (!$product) {
              return response()->json(['error' => 'product not found'], 404);
@@ -184,9 +190,14 @@ public function unsuspendCustomer($customer_id)
     
      public function sendDataCm(Request $request)
      {
-         $commands = Command::all();
- 
-         return response()->json($commands);
+        $commands = DB::table('commands')
+        ->join('partners', 'commands.partner_id', '=', 'partners.partner_id')
+        ->join('customers', 'commands.customer_id', '=', 'customers.customer_id')
+        ->join('partners_products', 'commands.product_id', '=', 'partners_products.product_id')
+        ->select('commands.*', 'partners.username as partner_name', 'customers.username as customer_name','partners_products.name as product_name')
+        ->get();
+
+    return response()->json($commands);
      }
  
      public function showCm($command)
